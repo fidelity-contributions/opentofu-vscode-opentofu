@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-
 /* eslint-disable no-undef */
 const esbuild = require('esbuild');
 const glob = require('glob');
