@@ -4,11 +4,11 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import * as path from 'path';
-import * as terraform from '../../api/terraform/terraform';
+import * as openTofu from '../../api/openTofu/openTofu';
 import * as vscode from 'vscode';
 import { LanguageClient } from 'vscode-languageclient/node';
 import { Utils } from 'vscode-uri';
-import { getActiveTextEditor, isTerraformFile } from '../../utils/vscode';
+import { getActiveTextEditor, isOpenTofuFile } from '../../utils/vscode';
 
 class ModuleCallItem extends vscode.TreeItem {
   constructor(
@@ -17,7 +17,7 @@ class ModuleCallItem extends vscode.TreeItem {
     public version: string | undefined,
     public sourceType: string | undefined,
     public docsLink: string | undefined,
-    public terraformIcon: string,
+    public openTofuIcon: string,
     public readonly children: ModuleCallItem[],
   ) {
     super(
@@ -42,8 +42,8 @@ class ModuleCallItem extends vscode.TreeItem {
     switch (type) {
       case 'tfregistry':
         return {
-          light: this.terraformIcon,
-          dark: this.terraformIcon,
+          light: this.openTofuIcon,
+          dark: this.openTofuIcon,
         };
       case 'local':
         return new vscode.ThemeIcon('symbol-folder');
@@ -107,44 +107,44 @@ export class ModuleCallsDataProvider implements vscode.TreeDataProvider<ModuleCa
   async getModules(): Promise<ModuleCallItem[]> {
     const activeEditor = getActiveTextEditor();
 
-    await vscode.commands.executeCommand('setContext', 'terraform.modules.documentOpened', true);
-    await vscode.commands.executeCommand('setContext', 'terraform.modules.documentIsTerraform', true);
-    await vscode.commands.executeCommand('setContext', 'terraform.modules.lspConnected', true);
-    await vscode.commands.executeCommand('setContext', 'terraform.modules.noResponse', false);
-    await vscode.commands.executeCommand('setContext', 'terraform.modules.noModules', false);
+    await vscode.commands.executeCommand('setContext', 'opentofu.modules.documentOpened', true);
+    await vscode.commands.executeCommand('setContext', 'opentofu.modules.documentIsOpenTofu', true);
+    await vscode.commands.executeCommand('setContext', 'opentofu.modules.lspConnected', true);
+    await vscode.commands.executeCommand('setContext', 'opentofu.modules.noResponse', false);
+    await vscode.commands.executeCommand('setContext', 'opentofu.modules.noModules', false);
 
     if (activeEditor?.document === undefined) {
       // there is no open document
-      await vscode.commands.executeCommand('setContext', 'terraform.modules.documentOpened', false);
+      await vscode.commands.executeCommand('setContext', 'opentofu.modules.documentOpened', false);
       return [];
     }
 
-    if (!isTerraformFile(activeEditor.document)) {
-      // the open file is not a terraform file
-      await vscode.commands.executeCommand('setContext', 'terraform.modules.documentIsTerraform', false);
+    if (!isOpenTofuFile(activeEditor.document)) {
+      // the open file is not a opentofu file
+      await vscode.commands.executeCommand('setContext', 'opentofu.modules.documentIsOpenTofu', false);
       return [];
     }
 
     if (this.client === undefined) {
-      // connection to terraform-ls failed
-      await vscode.commands.executeCommand('setContext', 'terraform.modules.lspConnected', false);
+      // connection to opentofu-ls failed
+      await vscode.commands.executeCommand('setContext', 'opentofu.modules.lspConnected', false);
       return [];
     }
 
     const editor = activeEditor.document.uri;
     const documentURI = Utils.dirname(editor);
 
-    let response: terraform.ModuleCallsResponse;
+    let response: openTofu.ModuleCallsResponse;
     try {
-      response = await terraform.moduleCalls(documentURI.toString(), this.client);
+      response = await openTofu.moduleCalls(documentURI.toString(), this.client);
       if (response === null) {
-        // no response from terraform-ls
-        await vscode.commands.executeCommand('setContext', 'terraform.modules.noResponse', true);
+        // no response from opentofu-ls
+        await vscode.commands.executeCommand('setContext', 'opentofu.modules.noResponse', true);
         return [];
       }
     } catch {
-      // error from terraform-ls
-      await vscode.commands.executeCommand('setContext', 'terraform.modules.noResponse', true);
+      // error from opentofu-ls
+      await vscode.commands.executeCommand('setContext', 'opentofu.modules.noResponse', true);
       return [];
     }
 
@@ -162,13 +162,13 @@ export class ModuleCallsDataProvider implements vscode.TreeDataProvider<ModuleCa
       });
 
       if (list.length === 0) {
-        await vscode.commands.executeCommand('setContext', 'terraform.modules.noModules', true);
+        await vscode.commands.executeCommand('setContext', 'opentofu.modules.noModules', true);
       }
 
       return list;
     } catch {
       // error mapping response
-      await vscode.commands.executeCommand('setContext', 'terraform.modules.noResponse', true);
+      await vscode.commands.executeCommand('setContext', 'opentofu.modules.noResponse', true);
       return [];
     }
   }
@@ -179,8 +179,8 @@ export class ModuleCallsDataProvider implements vscode.TreeDataProvider<ModuleCa
     version: string | undefined,
     sourceType: string | undefined,
     docsLink: string | undefined,
-    terraformIcon: string,
-    dependents: terraform.ModuleCall[],
+    openTofuIcon: string,
+    dependents: openTofu.ModuleCall[],
   ): ModuleCallItem {
     let deps: ModuleCallItem[] = [];
     if (dependents.length !== 0) {
@@ -191,12 +191,12 @@ export class ModuleCallsDataProvider implements vscode.TreeDataProvider<ModuleCa
           dp.version,
           dp.source_type,
           dp.docs_link,
-          terraformIcon,
+          openTofuIcon,
           dp.dependent_modules,
         ),
       );
     }
 
-    return new ModuleCallItem(name, sourceAddr, version, sourceType, docsLink, terraformIcon, deps);
+    return new ModuleCallItem(name, sourceAddr, version, sourceType, docsLink, openTofuIcon, deps);
   }
 }

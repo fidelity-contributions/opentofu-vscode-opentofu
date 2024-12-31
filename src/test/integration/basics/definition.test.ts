@@ -22,7 +22,7 @@ suite('definitions', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     test('returns definition for module source', async () => {
@@ -44,7 +44,7 @@ suite('definitions', () => {
 
       // module "compute" {
       //   source = "./compute"
-      //   instance_name = "terraform-machine"
+      //   instance_name = "opentofu-machine"
       await testDefinitions(docUri, new vscode.Position(20, 2), [location]);
     });
 
@@ -77,7 +77,7 @@ suite('definitions', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform-vars', 'document language should be `terraform-vars`');
+      assert.equal(doc.languageId, 'opentofu-vars', 'document language should be `opentofu-vars`');
     });
 
     test('returns definition for module source', async () => {

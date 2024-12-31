@@ -12,18 +12,14 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function getTestWorkspacePath() {
-  return path.join(__dirname, '../../../', 'testFixture');
-}
-
-describe('Terraform language tests', () => {
+describe('OpenTofu language tests', () => {
   let statusBar: StatusBar;
 
   before(async () => {
     const workbench = await browser.getWorkbench();
     statusBar = workbench.getStatusBar();
 
-    const testFile = path.join(getTestWorkspacePath(), `sample.tf`);
+    const testFile = path.join(__dirname, '../../../', 'fixtures', `sample.tf`);
     browser.executeWorkbench((vscode, fileToOpen) => {
       vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileToOpen));
     }, testFile);
@@ -34,10 +30,10 @@ describe('Terraform language tests', () => {
   });
 
   it('can detect correct language', async () => {
-    expect(await statusBar.getCurrentLanguage()).toContain('Terraform');
+    expect(await statusBar.getCurrentLanguage()).toContain('OpenTofu');
   });
 
-  // it('can detect terraform version', async () => {
+  // it('can detect openTofu version', async () => {
   //   let item: WebdriverIO.Element | undefined;
   //   await browser.waitUntil(
   //     async () => {
@@ -45,7 +41,7 @@ describe('Terraform language tests', () => {
   //       // console.log(i);
 
   //       item = await statusBar.getItem(
-  //         'Editor Language Status: 0.32.7, Terraform LS, next: 1.6.6, Terraform Installed, next: any, Terraform Required',
+  //         'Editor Language Status: 0.32.7, OpenTofu LS, next: 1.6.6, OpenTofu Installed, next: any, TerOpenTofuraform Required',
   //       );
   //     },
   //     { timeout: 10000, timeoutMsg: 'Did not find a version' },

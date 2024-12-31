@@ -18,28 +18,26 @@ import {
 } from 'vscode-languageclient/node';
 import { getServerOptions } from './utils/clientHelpers';
 import { GenerateBugReportCommand } from './commands/generateBugReport';
-import { ModuleCallsDataProvider } from './providers/terraform/moduleCalls';
-import { ModuleProvidersDataProvider } from './providers/terraform/moduleProviders';
+import { ModuleCallsDataProvider } from './providers/openTofu/moduleCalls';
+import { ModuleProvidersDataProvider } from './providers/openTofu/moduleProviders';
 import { ServerPath } from './utils/serverPath';
 import { config, handleLanguageClientStartError } from './utils/vscode';
 import { ShowReferencesFeature } from './features/showReferences';
 import { CustomSemanticTokens } from './features/semanticTokens';
 import { ModuleProvidersFeature } from './features/moduleProviders';
 import { ModuleCallsFeature } from './features/moduleCalls';
-import { TerraformVersionFeature } from './features/terraformVersion';
+import { OpenTofuVersionFeature } from './features/openTofuVersion';
 import { LanguageStatusFeature } from './features/languageStatus';
 import { getInitializationOptions } from './settings';
-import { TerraformLSCommands } from './commands/terraformls';
-import { TerraformCommands } from './commands/terraform';
+import { OpenTofuLSCommands } from './commands/openTofuLS';
+import { OpenTofuCommands } from './commands/openTofu';
 import * as lsStatus from './status/language';
 
 const id = 'opentofu';
 const brand = `OpenTofu`;
 const documentSelector: DocumentSelector = [
-  { scheme: 'file', language: 'terraform' },
-  { scheme: 'file', language: 'terraform-vars' },
-  { scheme: 'file', language: 'terraform-stack' },
-  { scheme: 'file', language: 'terraform-deploy' },
+  { scheme: 'file', language: 'opentofu' },
+  { scheme: 'file', language: 'opentofu-vars' },
 ];
 const outputChannel = vscode.window.createOutputChannel(brand);
 
@@ -50,8 +48,8 @@ let crashCount = 0;
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   const manifest = context.extension.packageJSON;
 
-  // always register commands needed to control terraform-ls
-  context.subscriptions.push(new TerraformLSCommands());
+  // always register commands needed to control opentofu-ls
+  context.subscriptions.push(new OpenTofuLSCommands());
 
   if (config('opentofu').get<boolean>('languageServer.enable') === false) {
     return;
@@ -70,8 +68,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       fileEvents: [
         vscode.workspace.createFileSystemWatcher('**/*.tf'),
         vscode.workspace.createFileSystemWatcher('**/*.tfvars'),
-        vscode.workspace.createFileSystemWatcher('**/*.tfstack.hcl'),
-        vscode.workspace.createFileSystemWatcher('**/*.tfdeploy.hcl'),
       ],
     },
     outputChannel: outputChannel,
@@ -112,7 +108,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
               outputChannel.show();
               break;
             case 'Open Settings':
-              await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:OpenTofu.tofu');
+              await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:opentofu.tofu');
               break;
             case 'More Info':
               await vscode.commands.executeCommand(
@@ -192,11 +188,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     new ModuleProvidersFeature(client, new ModuleProvidersDataProvider(context, client)),
     new ModuleCallsFeature(client, new ModuleCallsDataProvider(context, client)),
     new ShowReferencesFeature(client),
-    new TerraformVersionFeature(client, outputChannel),
+    new OpenTofuVersionFeature(client, outputChannel),
   ]);
 
   // these need the LS to function, so are only registered if enabled
-  context.subscriptions.push(new GenerateBugReportCommand(context), new TerraformCommands(client));
+  context.subscriptions.push(new GenerateBugReportCommand(context), new OpenTofuCommands(client));
 
   try {
     await client.start();

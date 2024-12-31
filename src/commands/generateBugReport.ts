@@ -7,7 +7,7 @@ import child_process = require('child_process');
 import * as os from 'os';
 import * as vscode from 'vscode';
 
-interface TerraformInfo {
+interface OpenTofuInfo {
   version: string;
   platform: string;
   outdated: boolean;
@@ -53,11 +53,11 @@ Steps to reproduce the behavior:
 2. Type '...'
 3. See error
 
-Include any relevant Terraform configuration or project structure:
+Include any relevant OpenTofu configuration or project structure:
 
 \`\`\`terraform
 resource "github_repository" "test" {
-  name = "vscode-terraform"
+  name = "vscode-opentofu"
 }
 \`\`\`
 
@@ -81,8 +81,8 @@ Additional context
 
 <!--
 Add any other context about the problem here.
-Note whether you use any tools for managing Terraform version/execution (e.g. 'tfenv')
-any credentials helpers, or whether you have any other Terraform extensions installed.
+Note whether you use any tools for managing OpenTofu version/execution (e.g. 'tfenv')
+any credentials helpers, or whether you have any other OpenTofu extensions installed.
 -->
 `;
     }
@@ -94,7 +94,7 @@ ${problemText}
 Environment Information
 =====
 
-Terraform Information
+OpenTofu Information
 -----
 
 ${this.generateRuntimeMarkdown(await this.getRuntimeInfo())}
@@ -119,7 +119,7 @@ Extension Logs
 -----
 
 > Find this from the first few lines of the relevant Output pane:
-View -> Output -> 'HashiCorp Terraform'
+View -> Output -> 'OpenTofu'
 
 `;
     return body;
@@ -141,7 +141,7 @@ View -> Output -> 'HashiCorp Terraform'
     return extensionTable;
   }
 
-  generateRuntimeMarkdown(info: TerraformInfo): string {
+  generateRuntimeMarkdown(info: OpenTofuInfo): string {
     const rows = `
 Version:\t${info.version}
 Platform:\t${info.platform}
@@ -172,12 +172,12 @@ Outdated:\t${info.outdated}
     return extensions;
   }
 
-  async getRuntimeInfo(): Promise<TerraformInfo> {
-    const terraformExe = 'tofu';
+  async getRuntimeInfo(): Promise<OpenTofuInfo> {
+    const openTofuExe = 'tofu';
     const spawn = child_process.spawnSync;
 
-    // try to get version from a newer terraform binary
-    const resultJson = spawn(terraformExe, ['version', '-json']);
+    // try to get version from a newer opentofu binary
+    const resultJson = spawn(openTofuExe, ['version', '-json']);
     if (resultJson.error === undefined) {
       try {
         const response = resultJson.stdout.toString();
@@ -194,7 +194,7 @@ Outdated:\t${info.outdated}
     }
 
     // try an older binary without the json flag
-    const result = spawn(terraformExe, ['version']);
+    const result = spawn(openTofuExe, ['version']);
     if (result.error === undefined) {
       try {
         const response = result.stdout.toString() || result.stderr.toString();

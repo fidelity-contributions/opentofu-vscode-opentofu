@@ -1,6 +1,6 @@
 
 resource "google_compute_network" "vpc_network" {
-  name = "terraform-network"
+  name = "opentofu-network"
 }
 
 resource "google_compute_instance" "vm_instance" {

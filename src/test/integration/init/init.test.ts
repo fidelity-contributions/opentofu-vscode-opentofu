@@ -22,7 +22,7 @@ suite('init', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     test('completes resource available in bundled schema', async () => {
@@ -42,7 +42,7 @@ suite('init', () => {
       await open(docUri);
       await activateExtension();
 
-      // run terraform init command to download provider schema
+      // run tofu init command to download provider schema
       await vscode.commands.executeCommand('opentofu.initCurrent');
       // wait for schema to be loaded
       await sleep(5_000);
@@ -63,7 +63,7 @@ suite('init', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     /* test('completes resource not available in downloaded schema', async () => {
@@ -92,7 +92,7 @@ suite('init', () => {
   // is that it is placed on some Ubuntu machine that has a different configuration than the others and that retries
   // will run on the same machine the job was assigned to initially.
   // When failing, it is missing the inputs for the module that should have been downloaded from the git repository
-  // via Terraform init. There are no errors in the logs indicating anything wrong.
+  // via tofu init. There are no errors in the logs indicating anything wrong.
   suite.skip('with module schema from git', function suite() {
     const docUri = getDocUri('git_module.tf');
 
@@ -100,7 +100,7 @@ suite('init', () => {
       await open(docUri);
       await activateExtension();
 
-      // run terraform init command to download provider schema
+      // run tofu init command to download provider schema
       await vscode.commands.executeCommand('opentofu.initCurrent');
       // wait for schema to be loaded
       await sleep(5_000);
@@ -121,7 +121,7 @@ suite('init', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     test('completes module from downloaded schema', async () => {

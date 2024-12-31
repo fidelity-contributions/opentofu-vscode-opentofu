@@ -13,8 +13,8 @@ export function config(section: string, scope?: vscode.ConfigurationScope): vsco
 export function getScope(section: string, settingName: string): vscode.ConfigurationTarget {
   let target: vscode.ConfigurationTarget = vscode.ConfigurationTarget.Global;
 
-  // getConfiguration('terraform').inspect('languageServer');
-  // not getConfiguration('terraform').inspect('languageServer.external'); !
+  // getConfiguration('opentofu').inspect('languageServer');
+  // not getConfiguration('opentofu').inspect('languageServer.external'); !
   // can use when we extract settings
   const inspect = vscode.workspace.getConfiguration(section).inspect(settingName);
   if (inspect === undefined) {
@@ -43,23 +43,23 @@ export function getActiveTextEditor(): vscode.TextEditor | undefined {
 }
 
 /*
-  Detects whether this is a Terraform file we can perform operations on
+  Detects whether this is a OpenTofu file we can perform operations on
  */
-export function isTerraformFile(document?: vscode.TextDocument): boolean {
+export function isOpenTofuFile(document?: vscode.TextDocument): boolean {
   if (document === undefined) {
     return false;
   }
 
   if (document.isUntitled) {
     // Untitled files are files which haven't been saved yet, so we don't know if they
-    // are terraform so we return false
+    // are OpenTofu so we return false
     return false;
   }
 
   // TODO: check for supported language IDs here instead
   if (document.fileName.endsWith('tf')) {
     // For the purposes of this extension, anything with the tf file
-    // extension is a Terraform file
+    // extension is a OpenTofu file
     return true;
   }
 
@@ -91,7 +91,7 @@ export async function handleLanguageClientStartError(error: unknown, ctx: vscode
     const messageText =
       'It looks like you opened a WSL url using a Windows UNC path' +
       ' outside of the [Remote WSL extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl).' +
-      ' The HashiCorp Terraform Extension works seamlessly with the Remote WSL Extension, but cannot work with this URL. Would you like to reopen this folder' +
+      ' The OpenTofu Extension works seamlessly with the Remote WSL Extension, but cannot work with this URL. Would you like to reopen this folder' +
       ' in the WSL Extension?';
 
     const choice = await vscode.window.showErrorMessage(

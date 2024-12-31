@@ -5,27 +5,27 @@
 
 import * as vscode from 'vscode';
 import { LanguageClient } from 'vscode-languageclient/node';
-import * as terraform from '../api/terraform/terraform';
+import * as opentofu from '../api/openTofu/openTofu';
 
-export class TerraformCommands implements vscode.Disposable {
+export class OpenTofuCommands implements vscode.Disposable {
   private commands: vscode.Disposable[];
 
   constructor(private client: LanguageClient) {
     this.commands = [
       vscode.commands.registerCommand('opentofu.init', async () => {
-        await terraform.initAskUserCommand(this.client);
+        await opentofu.initAskUserCommand(this.client);
       }),
       vscode.commands.registerCommand('opentofu.initCurrent', async () => {
-        await terraform.initCurrentOpenFileCommand(this.client);
+        await opentofu.initCurrentOpenFileCommand(this.client);
       }),
       vscode.commands.registerCommand('opentofu.apply', async () => {
-        await terraform.command('apply', this.client, true);
+        await opentofu.command('apply', this.client, true);
       }),
       vscode.commands.registerCommand('opentofu.plan', async () => {
-        await terraform.command('plan', this.client, true);
+        await opentofu.command('plan', this.client, true);
       }),
       vscode.commands.registerCommand('opentofu.validate', async () => {
-        await terraform.command('validate', this.client);
+        await opentofu.command('validate', this.client);
       }),
     ];
   }

@@ -23,12 +23,12 @@ suite('code actions', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     test('formats the document', async () => {
       const supported = [
-        new vscode.CodeAction('Format Document', vscode.CodeActionKind.Source.append('formatAll').append('terraform')),
+        new vscode.CodeAction('Format Document', vscode.CodeActionKind.Source.append('formatAll').append('opentofu')),
       ];
 
       // wait till the LS is ready to accept a code action request

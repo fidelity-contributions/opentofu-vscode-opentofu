@@ -11,7 +11,7 @@ import {
   ServerCapabilities,
   StaticFeature,
 } from 'vscode-languageclient';
-import { ModuleProvidersDataProvider } from '../providers/terraform/moduleProviders';
+import { ModuleProvidersDataProvider } from '../providers/openTofu/moduleProviders';
 import { ExperimentalClientCapabilities } from './types';
 
 export const CLIENT_MODULE_PROVIDERS_CMD_ID = 'client.refreshModuleProviders';
@@ -45,11 +45,11 @@ export class ModuleProvidersFeature implements StaticFeature {
 
     if (!capabilities.experimental?.refreshModuleProviders) {
       console.log("Server doesn't support client.refreshModuleProviders");
-      await vscode.commands.executeCommand('setContext', 'terraform.providers.supported', false);
+      await vscode.commands.executeCommand('setContext', 'opentofu.providers.supported', false);
       return;
     }
 
-    await vscode.commands.executeCommand('setContext', 'terraform.providers.supported', true);
+    await vscode.commands.executeCommand('setContext', 'opentofu.providers.supported', true);
 
     const d = this.client.onRequest(CLIENT_MODULE_PROVIDERS_CMD_ID, () => {
       this.view?.refresh();

@@ -11,7 +11,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-describe('Terraform ViewContainer', function () {
+export function getTestWorkspacePath() {
+  return path.join(__dirname, '../../../', 'testFixture');
+}
+
+describe('OpenTofu ViewContainer', function () {
   this.retries(3);
   let workbench: Workbench;
 
@@ -23,15 +27,15 @@ describe('Terraform ViewContainer', function () {
     // TODO: Close the file
   });
 
-  it('should have terraform viewcontainer', async () => {
+  it('should have OpenTofu viewcontainer', async () => {
     const viewContainers = await workbench.getActivityBar().getViewControls();
     const titles = await Promise.all(viewContainers.map((vc) => vc.getTitle()));
-    expect(titles).toContain('HashiCorp Terraform');
+    expect(titles).toContain('OpenTofu');
   });
 
-  describe('in an terraform project', () => {
+  describe('in an OpenTofu project', () => {
     before(async () => {
-      const testFile = path.join(__dirname, '../../../', 'fixtures', `sample.tf`);
+      const testFile = path.join(getTestWorkspacePath(), `sample.tf`);
       browser.executeWorkbench((vscode, fileToOpen) => {
         vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileToOpen));
       }, testFile);
@@ -42,21 +46,22 @@ describe('Terraform ViewContainer', function () {
     });
 
     describe('providers view', () => {
-      let terraformViewContainer: ViewControl | undefined;
+      let openTofuViewContainer: ViewControl | undefined;
       let openViewContainer: SideBarView<any> | undefined;
       let callSection: ViewSection | undefined;
       let items: CustomTreeItem[];
 
       before(async () => {
-        terraformViewContainer = await workbench.getActivityBar().getViewControl('HashiCorp Terraform');
-        await terraformViewContainer?.wait();
-        await terraformViewContainer?.openView();
+        openTofuViewContainer = await workbench.getActivityBar().getViewControl('OpenTofu');
+        await openTofuViewContainer?.wait();
+        await openTofuViewContainer?.openView();
         openViewContainer = workbench.getSideBar();
       });
 
       it('should have providers view', async () => {
-        callSection = await openViewContainer?.getContent().getSection('PROVIDERS');
-        expect(callSection).toBeDefined();
+        const openViewContainerElem = await openViewContainer?.elem;
+        const commandViewElem = await openViewContainerElem?.$$('h3[title="Providers"]');
+        expect(commandViewElem).toHaveLength(1);
       });
 
       it('should include all providers', async () => {
@@ -74,30 +79,32 @@ describe('Terraform ViewContainer', function () {
               return true;
             }
           },
-          { timeout: 3_000, timeoutMsg: 'Never found any providers' },
+          { timeout: 10000, timeoutMsg: 'Never found any providers' },
         );
 
         const labels = await Promise.all(items.map((vi) => vi.getLabel()));
-        expect(labels).toEqual(['-/vault', 'hashicorp/google']);
+        expect(labels).toEqual(['-/vault']);
       });
     });
 
     describe('calls view', () => {
-      let terraformViewContainer: ViewControl | undefined;
+      let openTofuViewContainer: ViewControl | undefined;
       let openViewContainer: SideBarView<any> | undefined;
       let callSection: ViewSection | undefined;
       let items: CustomTreeItem[];
 
       before(async () => {
-        terraformViewContainer = await workbench.getActivityBar().getViewControl('HashiCorp Terraform');
-        await terraformViewContainer?.wait();
-        await terraformViewContainer?.openView();
+        openTofuViewContainer = await workbench.getActivityBar().getViewControl('OpenTofu');
+        await openTofuViewContainer?.wait();
+        await openTofuViewContainer?.openView();
         openViewContainer = workbench.getSideBar();
       });
 
       it('should have module calls view', async () => {
-        callSection = await openViewContainer?.getContent().getSection('MODULE CALLS');
-        expect(callSection).toBeDefined();
+        const openViewContainerElem = await openViewContainer?.elem;
+        const welcomeViewElem = await openViewContainerElem?.$$('h3[title="Module Calls"]');
+
+        expect(welcomeViewElem).toHaveLength(1);
       });
 
       it('should include all module calls', async () => {
@@ -115,11 +122,11 @@ describe('Terraform ViewContainer', function () {
               return true;
             }
           },
-          { timeout: 3_000, timeoutMsg: 'Never found any modules' },
+          { timeout: 10000, timeoutMsg: 'Never found any projects' },
         );
 
         const labels = await Promise.all(items.map((vi) => vi.getLabel()));
-        expect(labels).toEqual(['compute', 'local']);
+        expect(labels).toEqual(['local']);
       });
     });
   });

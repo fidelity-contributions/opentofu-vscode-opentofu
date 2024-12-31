@@ -3,10 +3,10 @@
 // Copyright (c) HashiCorp, Inc.
 // SPDX-License-Identifier: MPL-2.0
 
-import * as terraform from '../../api/terraform/terraform';
+import * as openTofu from '../../api/openTofu/openTofu';
 import * as vscode from 'vscode';
 import { Utils } from 'vscode-uri';
-import { getActiveTextEditor, isTerraformFile } from '../../utils/vscode';
+import { getActiveTextEditor, isOpenTofuFile } from '../../utils/vscode';
 import { LanguageClient } from 'vscode-languageclient/node';
 
 class ModuleProviderItem extends vscode.TreeItem {
@@ -38,7 +38,7 @@ export class ModuleProvidersDataProvider implements vscode.TreeDataProvider<Modu
     private client: LanguageClient,
   ) {
     ctx.subscriptions.push(
-      vscode.commands.registerCommand('terraform.providers.refreshList', () => this.refresh()),
+      vscode.commands.registerCommand('opentofu.providers.refreshList', () => this.refresh()),
       vscode.window.onDidChangeActiveTextEditor(async () => {
         // most of the time this is called when the user switches tabs or closes the file
         // we already check for state inside the getprovider function, so we can just call refresh here
@@ -71,44 +71,44 @@ export class ModuleProvidersDataProvider implements vscode.TreeDataProvider<Modu
   async getProvider(): Promise<ModuleProviderItem[]> {
     const activeEditor = getActiveTextEditor();
 
-    await vscode.commands.executeCommand('setContext', 'terraform.providers.documentOpened', true);
-    await vscode.commands.executeCommand('setContext', 'terraform.providers.documentIsTerraform', true);
-    await vscode.commands.executeCommand('setContext', 'terraform.providers.lspConnected', true);
-    await vscode.commands.executeCommand('setContext', 'terraform.providers.noResponse', false);
-    await vscode.commands.executeCommand('setContext', 'terraform.providers.noProviders', false);
+    await vscode.commands.executeCommand('setContext', 'opentofu.providers.documentOpened', true);
+    await vscode.commands.executeCommand('setContext', 'opentofu.providers.documentIsOpenTofu', true);
+    await vscode.commands.executeCommand('setContext', 'opentofu.providers.lspConnected', true);
+    await vscode.commands.executeCommand('setContext', 'opentofu.providers.noResponse', false);
+    await vscode.commands.executeCommand('setContext', 'opentofu.providers.noProviders', false);
 
     if (activeEditor?.document === undefined) {
       // there is no open document
-      await vscode.commands.executeCommand('setContext', 'terraform.providers.documentOpened', false);
+      await vscode.commands.executeCommand('setContext', 'opentofu.providers.documentOpened', false);
       return [];
     }
 
-    if (!isTerraformFile(activeEditor.document)) {
-      // the open file is not a terraform file
-      await vscode.commands.executeCommand('setContext', 'terraform.providers.documentIsTerraform', false);
+    if (!isOpenTofuFile(activeEditor.document)) {
+      // the open file is not a opentofu file
+      await vscode.commands.executeCommand('setContext', 'opentofu.providers.documentIsOpenTofu', false);
       return [];
     }
 
     if (this.client === undefined) {
-      // connection to terraform-ls failed
-      await vscode.commands.executeCommand('setContext', 'terraform.providers.lspConnected', false);
+      // connection to opentofu-ls failed
+      await vscode.commands.executeCommand('setContext', 'opentofu.providers.lspConnected', false);
       return [];
     }
 
     const editor = activeEditor.document.uri;
     const documentURI = Utils.dirname(editor);
 
-    let response: terraform.ModuleProvidersResponse;
+    let response: openTofu.ModuleProvidersResponse;
     try {
-      response = await terraform.moduleProviders(documentURI.toString(), this.client);
+      response = await openTofu.moduleProviders(documentURI.toString(), this.client);
       if (response === null) {
-        // no response from terraform-ls
-        await vscode.commands.executeCommand('setContext', 'terraform.providers.noResponse', true);
+        // no response from opentofu-ls
+        await vscode.commands.executeCommand('setContext', 'opentofu.providers.noResponse', true);
         return [];
       }
     } catch {
-      // error from terraform-ls
-      await vscode.commands.executeCommand('setContext', 'terraform.providers.noResponse', true);
+      // error from opentofu-ls
+      await vscode.commands.executeCommand('setContext', 'opentofu.providers.noResponse', true);
       return [];
     }
 
@@ -125,13 +125,13 @@ export class ModuleProvidersDataProvider implements vscode.TreeDataProvider<Modu
       );
 
       if (list.length === 0) {
-        await vscode.commands.executeCommand('setContext', 'terraform.providers.noProviders', true);
+        await vscode.commands.executeCommand('setContext', 'opentofu.providers.noProviders', true);
       }
 
       return list;
     } catch {
       // error mapping response
-      await vscode.commands.executeCommand('setContext', 'terraform.providers.noResponse', true);
+      await vscode.commands.executeCommand('setContext', 'opentofu.providers.noResponse', true);
       return [];
     }
   }

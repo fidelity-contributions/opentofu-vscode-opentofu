@@ -15,7 +15,7 @@ describe('VS Code Extension Testing', () => {
     const extensions = await browser.executeWorkbench((vscodeApi) => {
       return vscodeApi.extensions.all;
     });
-    expect(extensions.some((extension) => extension.id === 'hashicorp.terraform')).toBe(true);
+    expect(extensions.some((extension) => extension.id === 'opentofu.opentofu')).toBe(true);
   });
 
   it('should show all activity bar items', async () => {
@@ -27,8 +27,7 @@ describe('VS Code Extension Testing', () => {
       'Source Control',
       'Run and Debug',
       'Extensions',
-      'HashiCorp Terraform',
-      'HCP Terraform',
+      'OpenTofu',
     ]);
   });
 
@@ -42,7 +41,7 @@ describe('VS Code Extension Testing', () => {
 
   //   const outputView = await bottomBar.openOutputView();
   //   await outputView.wait();
-  //   await outputView.selectChannel('HashiCorp Terraform');
+  //   await outputView.selectChannel('OpenTofu');
   //   const output = await outputView.getText();
 
   //   expect(output.some((element) => element.toLowerCase().includes('dispatching next job'.toLowerCase()))).toBeTruthy();

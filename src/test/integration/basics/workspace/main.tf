@@ -18,7 +18,7 @@ provider "google" {
 module "compute" {
   source = "./compute"
 
-  instance_name = "terraform-machine"
+  instance_name = "opentofu-machine"
 
 }
 

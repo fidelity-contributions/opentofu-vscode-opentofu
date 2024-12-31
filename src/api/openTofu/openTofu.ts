@@ -47,23 +47,23 @@ export interface ModuleProvidersResponse {
   };
 }
 
-export interface TerraformInfoResponse {
+export interface OpenTofuInfoResponse {
   v: number;
   required_version?: string;
   discovered_version?: string;
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export async function terraformVersion(moduleUri: string, client: LanguageClient): Promise<TerraformInfoResponse> {
-  const command = 'terraform-ls.module.terraform';
+export async function openTofuVersion(moduleUri: string, client: LanguageClient): Promise<OpenTofuInfoResponse> {
+  const command = 'opentofu-ls.module.terraform';
 
-  const response = await execWorkspaceLSCommand<TerraformInfoResponse>(command, moduleUri, client);
+  const response = await execWorkspaceLSCommand<OpenTofuInfoResponse>(command, moduleUri, client);
 
   return response;
 }
 
 export async function moduleCallers(moduleUri: string, client: LanguageClient): Promise<ModuleCallersResponse> {
-  const command = 'terraform-ls.module.callers';
+  const command = 'opentofu-ls.module.callers';
 
   const response = await execWorkspaceLSCommand<ModuleCallersResponse>(command, moduleUri, client);
 
@@ -71,7 +71,7 @@ export async function moduleCallers(moduleUri: string, client: LanguageClient): 
 }
 
 export async function moduleCalls(moduleUri: string, client: LanguageClient): Promise<ModuleCallsResponse> {
-  const command = 'terraform-ls.module.calls';
+  const command = 'opentofu-ls.module.calls';
 
   const response = await execWorkspaceLSCommand<ModuleCallsResponse>(command, moduleUri, client);
 
@@ -79,7 +79,7 @@ export async function moduleCalls(moduleUri: string, client: LanguageClient): Pr
 }
 
 export async function moduleProviders(moduleUri: string, client: LanguageClient): Promise<ModuleProvidersResponse> {
-  const command = 'terraform-ls.module.providers';
+  const command = 'opentofu-ls.module.providers';
 
   const response = await execWorkspaceLSCommand<ModuleProvidersResponse>(command, moduleUri, client);
 
@@ -102,7 +102,7 @@ export async function initAskUserCommand(client: LanguageClient) {
     }
 
     const moduleUri = selected[0];
-    const command = `terraform-ls.terraform.init`;
+    const command = `opentofu-ls.terraform.init`;
 
     return execWorkspaceLSCommand<void>(command, moduleUri.toString(), client);
   } catch (error) {
@@ -116,7 +116,7 @@ export async function initAskUserCommand(client: LanguageClient) {
 
 export async function initCurrentOpenFileCommand(client: LanguageClient) {
   try {
-    await terraformCommand('initCurrent', client);
+    await OpenTofuCommand('initCurrent', client);
   } catch (error) {
     if (error instanceof Error) {
       vscode.window.showErrorMessage(error.message);
@@ -128,7 +128,7 @@ export async function initCurrentOpenFileCommand(client: LanguageClient) {
 
 export async function command(command: string, client: LanguageClient, useShell = false) {
   try {
-    await terraformCommand(command, client, useShell);
+    await OpenTofuCommand(command, client, useShell);
   } catch (error) {
     if (error instanceof Error) {
       vscode.window.showErrorMessage(error.message);
@@ -138,7 +138,7 @@ export async function command(command: string, client: LanguageClient, useShell 
   }
 }
 
-async function terraformCommand(command: string, client: LanguageClient, useShell = false): Promise<void> {
+async function OpenTofuCommand(command: string, client: LanguageClient, useShell = false): Promise<void> {
   const textEditor = getActiveTextEditor();
   if (textEditor === undefined) {
     vscode.window.showErrorMessage(`Open a OpenTofu module file and then run tofu ${command} again`);
@@ -156,40 +156,40 @@ async function terraformCommand(command: string, client: LanguageClient, useShel
   if (useShell) {
     const terminalName = `OpenTofu ${selectedModule}`;
     const moduleURI = vscode.Uri.parse(selectedModule);
-    const terraformCommand = await vscode.window.showInputBox({
+    const OpenTofuCommand = await vscode.window.showInputBox({
       value: `tofu ${command}`,
       prompt: `Run in ${selectedModule}`,
     });
-    if (terraformCommand === undefined) {
+    if (OpenTofuCommand === undefined) {
       return;
     }
 
     const terminal =
       vscode.window.terminals.find((t) => t.name === terminalName) ||
       vscode.window.createTerminal({ name: `OpenTofu ${selectedModule}`, cwd: moduleURI });
-    terminal.sendText(terraformCommand);
+    terminal.sendText(OpenTofuCommand);
     terminal.show();
 
     return;
   }
 
-  const fullCommand = `terraform-ls.terraform.${command}`;
+  const fullCommand = `opentofu-ls.terraform.${command}`;
 
   return execWorkspaceLSCommand<void>(fullCommand, selectedModule, client);
 }
 
 async function execWorkspaceLSCommand<T>(command: string, moduleUri: string, client: LanguageClient): Promise<T> {
-  // record whether we use terraform.init or terraform.initcurrent vscode commands
+  // record whether we use opentofu.init or opentofu.initcurrent vscode commands
   // this is hacky, but better than propagating down another parameter just to handle
   // which init command we used
-  if (command === 'terraform-ls.terraform.initCurrent') {
+  if (command === 'opentofu-ls.terraform.initCurrent') {
     // need to change to terraform-ls command after detection
-    command = 'terraform-ls.terraform.init';
+    command = 'opentofu-ls.terraform.init';
   }
 
   const commandSupported = clientSupportsCommand(client.initializeResult, command);
   if (!commandSupported) {
-    throw new Error(`${command} not supported by this terraform-ls version`);
+    throw new Error(`${command} not supported by this opentofu-ls version`);
   }
 
   const params: ExecuteCommandParams = {

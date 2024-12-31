@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { config, getScope } from '../utils/vscode';
 
-export class TerraformLSCommands implements vscode.Disposable {
+export class OpenTofuLSCommands implements vscode.Disposable {
   private commands: vscode.Disposable[];
 
   constructor() {
@@ -38,17 +38,17 @@ export class TerraformLSCommands implements vscode.Disposable {
 
         await config('opentofu').update('languageServer.enable', false, scope);
       }),
-      vscode.commands.registerCommand('terraform.openSettingsJson', async () => {
+      vscode.commands.registerCommand('opentofu.openSettingsJson', async () => {
         // this opens the default settings window (either UI or json)
         const s = await vscode.workspace.getConfiguration('workbench').get('settings.editor');
         if (s === 'json') {
           return await vscode.commands.executeCommand('workbench.action.openSettingsJson', {
-            revealSetting: { key: 'terraform.languageServer.enable', edit: true },
+            revealSetting: { key: 'opentofu.languageServer.enable', edit: true },
           });
         } else {
           return await vscode.commands.executeCommand('workbench.action.openSettings', {
             focusSearch: true,
-            query: '@ext:hashicorp.terraform',
+            query: '@ext:opentofu.opentofu',
           });
         }
       }),

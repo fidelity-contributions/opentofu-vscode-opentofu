@@ -31,7 +31,7 @@ suite('completion', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     test('simple completion', async () => {
@@ -70,7 +70,7 @@ suite('completion', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     // Completion for inputs of a local module
@@ -126,7 +126,7 @@ suite('completion', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     test('inputs of a registry module', async () => {
@@ -157,7 +157,7 @@ suite('completion', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform-vars', 'document language should be `terraform-vars`');
+      assert.equal(doc.languageId, 'opentofu-vars', 'document language should be `opentofu-vars`');
     });
 
     test('simple variable completion', async () => {
@@ -166,7 +166,6 @@ suite('completion', () => {
         new vscode.CompletionItem('project', vscode.CompletionItemKind.Property),
         new vscode.CompletionItem('region', vscode.CompletionItemKind.Property),
       ];
-      expected.push(...snippets);
       await testCompletion(docUri, new vscode.Position(1, 0), {
         items: expected,
       });

@@ -3,7 +3,6 @@
 // Copyright (c) HashiCorp, Inc.
 // SPDX-License-Identifier: MPL-2.0
 
-import { join } from 'path';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import type { Options } from '@wdio/types';
@@ -80,7 +79,7 @@ export const config: Options.Testrunner = {
         // optional VS Code settings
         userSettings: {
           'editor.fontSize': 14,
-          // 'terraform.trace.server': 'info',
+          // 'opentofu.trace.server': 'info',
           'window.newWindowDimensions': 'default',
           'extensions.autoCheckUpdates': false,
           'extensions.autoUpdate': false,

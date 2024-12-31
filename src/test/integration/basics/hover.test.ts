@@ -22,14 +22,14 @@ suite('hover', () => {
 
     test('language is registered', async () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
-      assert.equal(doc.languageId, 'terraform', 'document language should be `terraform`');
+      assert.equal(doc.languageId, 'opentofu', 'document language should be `opentofu`');
     });
 
     test('returns docs for terraform block', async () => {
       await testHover(docUri, new vscode.Position(0, 1), [
         new vscode.Hover(
           new vscode.MarkdownString(
-            '**terraform** _Block_\n\nTerraform block used to configure some high-level behaviors of Terraform',
+            '**terraform** _Block_\n\nTerraform block used to configure some high-level behaviors of OpenTofu',
           ),
           new vscode.Range(new vscode.Position(14, 12), new vscode.Position(14, 20)),
         ),

@@ -32,7 +32,7 @@ function getPlatform(platform: string) {
 }
 
 function getArch(arch: string) {
-  // platform | terraform-ls  | extension platform | vs code editor
+  // platform | opentofu-ls  | extension platform | vs code editor
   //    --    |           --  |         --         | --
   // macOS    | darwin_amd64  | darwin_x64         | ✅
   // macOS    | darwin_arm64  | darwin_arm64       | ✅
@@ -118,7 +118,7 @@ async function downloadFile(url: string, installPath: string) {
 
 async function downloadSyntax(info: ExtensionInfo) {
   const release = `v${info.syntaxVersion}`;
-  info.name = 'terraform';
+  info.name = 'terraform'; // Currently we didn't fork the https://github.com/hashicorp/syntax/ repo, so we still use the syntax for terraform
 
   const cwd = path.resolve(__dirname);
   const buildDir = path.basename(cwd);
@@ -135,11 +135,11 @@ async function downloadSyntax(info: ExtensionInfo) {
   fs.mkdirSync(installPath);
 
   const productName = info.name.replace('-preview', '');
-  const terraformSyntaxFile = `${productName}.tmGrammar.json`;
+  const openTofuSyntaxFile = `${productName}.tmGrammar.json`;
   const hclSyntaxFile = `hcl.tmGrammar.json`;
 
-  let url = `https://github.com/hashicorp/syntax/releases/download/${release}/${terraformSyntaxFile}`;
-  await downloadFile(url, path.join(installPath, terraformSyntaxFile));
+  let url = `https://github.com/hashicorp/syntax/releases/download/${release}/${openTofuSyntaxFile}`;
+  await downloadFile(url, path.join(installPath, openTofuSyntaxFile));
 
   url = `https://github.com/hashicorp/syntax/releases/download/${release}/${hclSyntaxFile}`;
   await downloadFile(url, path.join(installPath, hclSyntaxFile));

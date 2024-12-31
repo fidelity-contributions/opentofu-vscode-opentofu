@@ -8,11 +8,11 @@ export interface InitializationOptions {
   indexing?: IndexingOptions;
   experimentalFeatures?: ExperimentalFeatures;
   ignoreSingleFileWarning?: boolean;
-  terraform?: TerraformOptions;
+  openTofu?: OpenTofuOptions;
   validation?: ValidationOptions;
 }
 
-export interface TerraformOptions {
+export interface OpenTofuOptions {
   path: string;
   timeout: string;
   logFilePath: string;
@@ -42,7 +42,7 @@ export async function getInitializationOptions() {
     enableEnhancedValidation: true,
   });
 
-  const terraform = config('opentofu').get<TerraformOptions>('languageServer.opentofu', {
+  const openTofu = config('opentofu').get<OpenTofuOptions>('languageServer.opentofu', {
     path: '',
     timeout: '',
     logFilePath: '',
@@ -67,7 +67,7 @@ export async function getInitializationOptions() {
     validation,
     experimentalFeatures,
     ignoreSingleFileWarning,
-    terraform,
+    openTofu: openTofu,
     ...(rootModulePaths.length > 0 && { rootModulePaths }),
     indexing,
   };
