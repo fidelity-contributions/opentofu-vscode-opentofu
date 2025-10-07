@@ -4,14 +4,9 @@ Releases are made on a reasonably regular basis by the maintainers, using the [v
 
 Release process:
 
-1. Create a release branch/PR with the following changes:
+1. Once everything we need to include in the release in on the *main* branch, trigger "Prepare Release" workflow.
+    - Depending on which type of release we are doing, select either: major, minor or patch.
+    - If the release should include `tofu-ls` version update, set the `ls-version` input, ex: 0.1.0, latest, etc.
+1. Once the workflow is finished, review the PR it created. Make adjustments if necessary and merge it.
 
-   - Bump the language server version in `package.json` if the release should include a [LS update](https://github.com/opentofu/tofu-ls/releases)
-   - Update the [CHANGELOG.md](../CHANGELOG.md) with the recent changes
-   - Bump the version in by running `npm version vX.Y.Z --no-git-tag-version` - creates unstaged version update in package.json and package-lock.json files.
-1. Review & merge the branch and wait for the [Test Workflow](https://github.com/opentofu/vscode-opentofu/actions/workflows/test.yml) on `main` to complete.
-1. Go to the [Draft a new release page](https://github.com/opentofu/vscode-opentofu/releases/new);
-1. Click on "Choose a tag", type "vX.Y.Z", then click on the "Create a new tag: vX.Y.Z" label;
-1. Click on "Generate release notes" in order to add an auto-generated description and copy the CHANGELOG.md changes on the top of the description.
-1. Click on "Publish Release" to finish the process. The `release.yml` workflow
-will be triggered in response to this event.
+That is the whole flow. Once the PR is merged, the `Release` workflow will be triggered automatically.
