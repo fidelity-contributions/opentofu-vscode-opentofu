@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.5.0 (2025-10-31)
+
+*Includes a new LS version - [tofu-ls latest](https://github.com/opentofu/tofu-ls/releases/tag/vlatest)*
+
+### Features
+* Ephemeral block and attribute support
+
+**Full Changelog**: https://github.com/opentofu/vscode-opentofu/compare/v0.4.2...v0.5.0
+
 ## 0.4.1 (2025-09-16)
 - Fix: language server crashing on resources with no provider prefix
 - Fix: Removes the `fallback` attribute from the fallback block
